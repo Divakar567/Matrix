@@ -25,19 +25,23 @@ public class BrainConfig {
 
 	@Autowired
 	BrainConstruction brainConstructService;
+	
+	private Brain brain;
 
 	@Bean
 	public Brain brain() {
-		BRAIN_NAME = StringUtil.isNullOrEmpty(BRAIN_NAME) ? "matrix" : BRAIN_NAME;
+		BRAIN_NAME = StringUtil.isNullOrEmpty(BRAIN_NAME) ? "matrix-default" : BRAIN_NAME;
 		Response<Brain> response = brainConstructService.loadBrain(BRAIN_NAME);
-		logger.info(BRAIN_NAME + "===> Loading brain completed\n"+ response.getMessage());
-		return response.getResponse();
+		logger.info(response.getMessage());
+		brain = response.getResponse();
+		return brain;
 	}
 
 	@PreDestroy
 	public void saveBrain() {
-		BRAIN_NAME = StringUtil.isNullOrEmpty(BRAIN_NAME) ? "matrix" : BRAIN_NAME;
-		Response<String> response = brainConstructService.saveBrain(BRAIN_NAME);
-		logger.info(BRAIN_NAME + "===> Saving brain completed\n" + response.getMessage());
+		if(brain != null) {
+			Response<Brain> response = brainConstructService.saveBrain(brain);
+			logger.info(response.getMessage());
+		}
 	}
 }

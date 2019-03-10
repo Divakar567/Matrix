@@ -1,0 +1,5 @@
+{"properties": [{
+  "name": "matrix.brain-name",
+  "type": "java.lang.String",
+  "description": "brain-name is the name of matrix brain"
+}]}

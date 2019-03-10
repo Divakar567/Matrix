@@ -10,14 +10,25 @@ public class DefaultBrainConstruction implements BrainConstruction{
 
 	@Override
 	public Response<Brain> loadBrain(String name) {
+		Brain brain = new Brain(name);
 		// TODO Auto-generated method stub
-		return null;
+		
+		Response<Brain> response = new Response<>();
+		response.setStatus("Success");
+		response.setMessage(name.toUpperCase()+" successfully loaded");
+		response.setResponse(brain);
+		return response;
 	}
 
 	@Override
-	public Response<String> saveBrain(String name) {
+	public Response<Brain> saveBrain(Brain brain) {
 		// TODO Auto-generated method stub
-		return null;
+
+		Response<Brain> response = new Response<>();
+		response.setStatus("Success");
+		response.setMessage(brain.getName().toUpperCase()+" successfully saved");
+		response.setResponse(brain);
+		return response;
 	}
 
 	@Override
@@ -27,7 +38,7 @@ public class DefaultBrainConstruction implements BrainConstruction{
 	}
 
 	@Override
-	public Response<Brain> destroyBrain(String name) {
+	public Response<Brain> destroyBrain(Brain brain) {
 		// TODO Auto-generated method stub
 		return null;
 	}

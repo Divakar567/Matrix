@@ -10,10 +10,10 @@ public interface BrainConstruction {
 
 	public Response<Brain> loadBrain(String name);
 
-	public Response<String> saveBrain(String name);
+	public Response<Brain> saveBrain(Brain brain);
 	
 	public Response<Brain> createBrain(String name);
 	
-	public Response<Brain> destroyBrain(String name);
+	public Response<Brain> destroyBrain(Brain brain);
 
 }
