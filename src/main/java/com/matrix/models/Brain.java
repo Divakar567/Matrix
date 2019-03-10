@@ -1,95 +1,45 @@
 package com.matrix.models;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.matrix.functions.BrainFunction;
-import com.matrix.monitors.Monitor;
-import com.matrix.processors.SignalProcessor;
-import com.matrix.protectors.Protector;
 import com.matrix.services.BrainProcessor;
 
 public class Brain {
-	
+
 	@Autowired
 	BrainProcessor brainProcessor;
-	
-	String name;
-	Map<String, Neuron> neurons;
-	Map<String, BrainFunction> functions;
-	Map<String, SignalProcessor> processors;
-	Map<String, Monitor> brainMonitors;
-	Map<String, Protector> brainProtectors;
 
-	public Brain(String name) {
+	private String id;
+	private List<String> neurons;
+
+	public Brain(String id) {
 		super();
-		this.name = name;
-		this.neurons = new LinkedHashMap<>();
-		this.functions = new LinkedHashMap<>();
-		this.processors = new LinkedHashMap<>();
-		this.brainMonitors = new LinkedHashMap<>();
-		this.brainProtectors = new LinkedHashMap<>();
+		this.id = id;
+		this.neurons = new ArrayList<>();
 	}
 
-	public Brain(String name, Map<String, Neuron> neurons, Map<String, BrainFunction> functions,
-			Map<String, SignalProcessor> processors, Map<String, Monitor> brainMonitors,
-			Map<String, Protector> brainProtectors) {
+	public Brain(String id, List<String> neurons) {
 		super();
-		this.name = name;
+		this.id = id;
 		this.neurons = neurons;
-		this.functions = functions;
-		this.processors = processors;
-		this.brainMonitors = brainMonitors;
-		this.brainProtectors = brainProtectors;
 	}
 
-	public String getName() {
-		return name;
+	public String getId() {
+		return id;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setId(String id) {
+		this.id = id;
 	}
 
-	public Map<String, Neuron> getNeurons() {
+	public List<String> getNeurons() {
 		return neurons;
 	}
 
-	public void setNeurons(Map<String, Neuron> neurons) {
+	public void setNeurons(List<String> neurons) {
 		this.neurons = neurons;
-	}
-
-	public Map<String, BrainFunction> getFunctions() {
-		return functions;
-	}
-
-	public void setFunctions(Map<String, BrainFunction> functions) {
-		this.functions = functions;
-	}
-
-	public Map<String, SignalProcessor> getProcessors() {
-		return processors;
-	}
-
-	public void setProcessors(Map<String, SignalProcessor> processors) {
-		this.processors = processors;
-	}
-
-	public Map<String, Monitor> getBrainMonitors() {
-		return brainMonitors;
-	}
-
-	public void setBrainMonitors(Map<String, Monitor> brainMonitors) {
-		this.brainMonitors = brainMonitors;
-	}
-
-	public Map<String, Protector> getBrainProtectors() {
-		return brainProtectors;
-	}
-
-	public void setBrainProtectors(Map<String, Protector> brainProtectors) {
-		this.brainProtectors = brainProtectors;
 	}
 }

@@ -26,21 +26,30 @@ public class DefaultBrainConstruction implements BrainConstruction{
 
 		Response<Brain> response = new Response<>();
 		response.setStatus("Success");
-		response.setMessage(brain.getName().toUpperCase()+" successfully saved");
+		response.setMessage(brain.getId().toUpperCase()+" successfully saved");
 		response.setResponse(brain);
 		return response;
 	}
 
 	@Override
 	public Response<Brain> createBrain(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		Brain brain = new Brain(name);
+		Response<Brain> response = new Response<>();
+		response.setStatus("Success");
+		response.setMessage(name.toUpperCase()+" successfully created");
+		response.setResponse(brain);
+		return response;
 	}
 
 	@Override
 	public Response<Brain> destroyBrain(Brain brain) {
 		// TODO Auto-generated method stub
-		return null;
+		
+		Response<Brain> response = new Response<>();
+		response.setStatus("Success");
+		response.setMessage(brain.getId().toUpperCase()+" successfully destroyed");
+		response.setResponse(brain);
+		return response;
 	}
 
 }
