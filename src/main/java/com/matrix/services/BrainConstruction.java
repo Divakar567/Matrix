@@ -6,7 +6,7 @@ import com.matrix.models.Brain;
 import com.matrix.models.Response;
 
 @Service
-public interface BrainConstructionService {
+public interface BrainConstruction {
 
 	public Response<Brain> loadBrain(String name);
 

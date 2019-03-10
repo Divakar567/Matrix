@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.matrix.models.Brain;
 import com.matrix.models.Response;
-import com.matrix.services.BrainConstructionService;
+import com.matrix.services.BrainConstruction;
 
 import io.netty.util.internal.StringUtil;
 
@@ -24,7 +24,7 @@ public class BrainConfig {
 	String BRAIN_NAME;
 
 	@Autowired
-	BrainConstructionService brainConstructService;
+	BrainConstruction brainConstructService;
 
 	@Bean
 	public Brain brain() {
