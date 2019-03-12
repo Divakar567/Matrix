@@ -12,10 +12,10 @@ import com.matrix.models.Signal;
 import com.matrix.models.Terminal;
 
 @Service
-public class DefaultNeuronProcessor implements NeuronProcessor {
+public class DefaultNeuronManager implements NeuronManager {
 
 	@Autowired
-	NeuronProcessor neuronProcessor;
+	NeuronManager neuronProcessor;
 	
 
 	@Override

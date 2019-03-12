@@ -11,6 +11,7 @@ import org.apache.http.HttpHost;
 import org.apache.http.message.BasicHeader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.elasticsearch.client.AdminClient;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -41,7 +42,7 @@ public class ElasticsearchConfig {
 	private RestHighLevelClient restHighClient;
 	
 	@SuppressWarnings("resource")
-	@Bean
+	@Bean("elasticClient")
 	public TransportClient transportClient() throws UnknownHostException {
 		transportClient = new PreBuiltTransportClient(
 				  Settings.builder().put("client.transport.sniff", true)
@@ -51,7 +52,7 @@ public class ElasticsearchConfig {
 		return transportClient;
 	}
 	
-	@Bean
+	@Bean("restClient")
 	public RestClient restClient() {
 		RestClientBuilder clientBuilder = RestClient.builder(
 				new HttpHost(elsticsearchHostName, 9200, "http")
@@ -63,13 +64,19 @@ public class ElasticsearchConfig {
 		return restClient;
 	}
 	
-	@Bean
+	@Bean("elasticHighClient")
 	public RestHighLevelClient restHighClient() {
 		restHighClient = new RestHighLevelClient(
 		        RestClient.builder(
 		                new HttpHost(elsticsearchHostName, 9200, "http")));
 		logger.info("Elasticsearch Rest High Level client successfully conncted to cluster");
 		return restHighClient;
+	}
+	
+	@Bean("elasticAdmin")
+	public AdminClient adminClient() {
+		AdminClient adminClient = transportClient.admin();
+		return adminClient;
 	}
 	
 	@PreDestroy

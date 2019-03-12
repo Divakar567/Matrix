@@ -9,6 +9,7 @@ import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -56,13 +57,16 @@ public class DefaultBrainRepository implements BrainRepository {
 		try {
 			String source = MatrixUtils.maptToJson(brain);
 			IndexResponse response = elasticClient.prepareIndex(ELASTIC_INDEX_NAME, DOCUMENT_TYPE, brain.getId())
-					.setSource(source).get();
+					.setSource(source, XContentType.JSON).get();
 			if (response.getResult().toString().contentEquals("CREATED")) {
 				status = true;
 				logger.info(brain.getId() + " successfully saved in Elasticsearch");
+			} else if(response.getResult().toString().contentEquals("UPDATED")) {
+				status = true;
+				logger.info(brain.getId().toUpperCase() + " successfully updated in Elasticsearch");
 			}
 		} catch (Exception e) {
-			logger.error("Unable to update " + brain.getId() + " in Elasticsearch:\n", e);
+			logger.error("Unable to save " + brain.getId() + " in Elasticsearch:\n", e);
 		}
 		return status;
 	}

@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.matrix.processors.DefaultSignalProcessor;
 import com.matrix.processors.SignalProcessor;
-import com.matrix.services.NeuronProcessor;
+import com.matrix.services.NeuronManager;
 
 public class Neuron extends ElasticDocument {
 
@@ -36,7 +36,7 @@ public class Neuron extends ElasticDocument {
 		terminals = new ArrayList<>();
 	}
 
-	public Neuron(NeuronProcessor neuronProcessor, String id, String brainName, String type,
+	public Neuron(NeuronManager neuronProcessor, String id, String brainName, String type,
 			List<String> dendrites, List<String> terminals, SignalProcessor signalProcessor) {
 		super();
 		this.id = id;

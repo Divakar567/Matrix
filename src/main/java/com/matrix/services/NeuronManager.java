@@ -5,7 +5,7 @@ import com.matrix.models.Neuron;
 import com.matrix.models.Signal;
 import com.matrix.models.Terminal;
 
-public interface NeuronProcessor {
+public interface NeuronManager {
 	
 	public void process(Neuron neuron, Signal signal);
 	
