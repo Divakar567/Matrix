@@ -1,6 +1,6 @@
 package com.matrix.models;
 
-public class Synapse {
+public class Synapse extends ElasticDocument {
 	private String id;
 	private Dendrite dendriteName;
 	private Terminal terminalName;

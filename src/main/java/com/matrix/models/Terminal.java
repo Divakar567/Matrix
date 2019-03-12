@@ -1,6 +1,6 @@
 package com.matrix.models;
 
-public class Terminal {
+public class Terminal extends ElasticDocument {
 	String id;
 	String neuronName;
 	Synapse synapse;

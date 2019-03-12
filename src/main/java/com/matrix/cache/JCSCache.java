@@ -7,16 +7,16 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.matrix.dao.BrainRepository;
-import com.matrix.dao.DendriteRepository;
-import com.matrix.dao.NeuronRepository;
-import com.matrix.dao.SynapseRepository;
-import com.matrix.dao.TerminalRepository;
 import com.matrix.models.Brain;
 import com.matrix.models.Dendrite;
 import com.matrix.models.Neuron;
 import com.matrix.models.Synapse;
 import com.matrix.models.Terminal;
+import com.matrix.repos.BrainRepository;
+import com.matrix.repos.DendriteRepository;
+import com.matrix.repos.NeuronRepository;
+import com.matrix.repos.SynapseRepository;
+import com.matrix.repos.TerminalRepository;
 
 @Component
 public class JCSCache {
@@ -107,5 +107,24 @@ public class JCSCache {
 			}
 		}
 		return synapse;
+	}
+	
+	public boolean clearCache(String... args) {
+		boolean status = false;
+		
+		try {
+			brainCache.clear();
+			neuronCache.clear();
+			dendriteCache.clear();
+			terminalCache.clear();
+			synapseCache.clear();
+			
+			logger.info("Cache successfully cleared");
+			status = true;
+		} catch(Exception e) {
+			logger.error("Cache clearing unsuccessful", e);
+		}
+		
+		return status;
 	}
 }

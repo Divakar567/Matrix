@@ -1,5 +1,5 @@
 package com.matrix.functions;
 
-public interface BrainFunction {
+public class NeuronFunctions {
 
 }

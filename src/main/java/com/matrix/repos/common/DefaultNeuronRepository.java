@@ -1,4 +1,4 @@
-package com.matrix.dao;
+package com.matrix.repos.common;
 
 import java.util.Map;
 
@@ -14,30 +14,31 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.matrix.models.Synapse;
+import com.matrix.models.Neuron;
+import com.matrix.repos.NeuronRepository;
 import com.matrix.statics.MatrixUtils;
 
 @Component
-public class DefaultSynapseRepository implements SynapseRepository {
+public class DefaultNeuronRepository implements NeuronRepository {
 
 	@Autowired
 	TransportClient elasticClient;
 
-	private Logger logger = LogManager.getLogger(DefaultSynapseRepository.class);
+	private Logger logger = LogManager.getLogger(DefaultNeuronRepository.class);
 
 	@Value("${spring.data.elasticsearch.properties.index-name}")
 	private String ELASTIC_INDEX_NAME;
 
-	private String DOCUMENT_TYPE = "_synapse";
+	private String DOCUMENT_TYPE = "_doc";
 
 	@Override
-	public Synapse getSynapse(String id) {
-		Synapse synapse = null;
+	public Neuron getNeuron(String id) {
+		Neuron neuron = null;
 		try {
 			GetResponse response = elasticClient.prepareGet(ELASTIC_INDEX_NAME, DOCUMENT_TYPE, id).get();
 			if (response.isExists()) {
 				String source = response.getSourceAsString();
-				synapse = MatrixUtils.mapToObject(source, new TypeReference<Synapse>() {
+				neuron = MatrixUtils.mapToObject(source, new TypeReference<Neuron>() {
 				});
 				logger.info(id.toUpperCase() + " successfully retrieved from Elasticsearch");
 			} else {
@@ -46,40 +47,40 @@ public class DefaultSynapseRepository implements SynapseRepository {
 		} catch (Exception e) {
 			logger.error("Unable to get " + id.toUpperCase() + " from Elasticsearch:\n", e);
 		}
-		return synapse;
+		return neuron;
 	}
 
 	@Override
-	public boolean saveSynapse(Synapse synapse) {
+	public boolean saveNeuron(Neuron neuron) {
 		boolean status = false;
 		try {
-			String source = MatrixUtils.maptToJson(synapse);
-			IndexResponse response = elasticClient.prepareIndex(ELASTIC_INDEX_NAME, DOCUMENT_TYPE, synapse.getId())
+			String source = MatrixUtils.maptToJson(neuron);
+			IndexResponse response = elasticClient.prepareIndex(ELASTIC_INDEX_NAME, DOCUMENT_TYPE, neuron.getId())
 					.setSource(source).get();
 			if (response.getResult().toString().contentEquals("CREATED")) {
 				status = true;
-				logger.info(synapse.getId() + " successfully saved in Elasticsearch");
+				logger.info(neuron.getId() + " successfully saved in Elasticsearch");
 			}
 		} catch (Exception e) {
-			logger.error("Unable to update " + synapse.getId() + " in Elasticsearch:\n", e);
+			logger.error("Unable to update " + neuron.getId() + " in Elasticsearch:\n", e);
 		}
 		return status;
 	}
 
 	@Override
-	public Synapse updateSynapse(String id, Map<String, Object> synapseUpdates) {
-		Synapse synapse = null;
+	public Neuron updateNeuron(String id, Map<String, Object> neuronUpdates) {
+		Neuron neuron = null;
 		try {
 			UpdateResponse response = elasticClient.prepareUpdate(ELASTIC_INDEX_NAME, DOCUMENT_TYPE, id)
-					.setDoc(synapseUpdates).setFetchSource(true).get();
+					.setDoc(neuronUpdates).setFetchSource(true).get();
 			if (response.getResult().toString().contentEquals("UPDATED")) {
 				String source = response.getGetResult().sourceAsString();
-				synapse = MatrixUtils.mapToObject(source, new TypeReference<Synapse>() {
+				neuron = MatrixUtils.mapToObject(source, new TypeReference<Neuron>() {
 				});
 				logger.info(id.toUpperCase() + " successfully updated in Elasticsearch");
 			} else if (response.getResult().toString().contentEquals("NOOP")) {
 				String source = response.getGetResult().sourceAsString();
-				synapse = MatrixUtils.mapToObject(source, new TypeReference<Synapse>() {
+				neuron = MatrixUtils.mapToObject(source, new TypeReference<Neuron>() {
 				});
 				logger.info(id.toUpperCase() + " is already up to date in Elasticsearch");
 			} else if (response.getResult().toString().contentEquals("NOT_FOUND")) {
@@ -90,11 +91,11 @@ public class DefaultSynapseRepository implements SynapseRepository {
 		} catch (Exception e) {
 			logger.error("Unable to update " + id.toUpperCase() + " from Elasticsearch:\n", e);
 		}
-		return synapse;
+		return neuron;
 	}
 
 	@Override
-	public boolean deleteSynapse(String id) {
+	public boolean deleteNeuron(String id) {
 		boolean status = false;
 		try {
 			DeleteResponse response = elasticClient.prepareDelete(ELASTIC_INDEX_NAME, DOCUMENT_TYPE, id).get();

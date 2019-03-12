@@ -1,5 +1,5 @@
 package com.matrix.models;
 
-public class Memory {
+public class Memory extends ElasticDocument {
 
 }

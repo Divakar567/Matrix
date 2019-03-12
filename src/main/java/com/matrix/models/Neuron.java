@@ -7,7 +7,7 @@ import com.matrix.processors.DefaultSignalProcessor;
 import com.matrix.processors.SignalProcessor;
 import com.matrix.services.NeuronProcessor;
 
-public class Neuron {
+public class Neuron extends ElasticDocument {
 
 	private String id;
 	private String brainName;

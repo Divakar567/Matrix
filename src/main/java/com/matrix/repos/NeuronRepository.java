@@ -1,4 +1,4 @@
-package com.matrix.dao;
+package com.matrix.repos;
 
 import java.util.Map;
 

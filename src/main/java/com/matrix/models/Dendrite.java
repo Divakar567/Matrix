@@ -1,6 +1,6 @@
 package com.matrix.models;
 
-public class Dendrite {
+public class Dendrite extends ElasticDocument {
 	String id;
 	Neuron neuron;
 	Synapse synapse;

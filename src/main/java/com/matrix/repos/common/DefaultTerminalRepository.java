@@ -1,4 +1,4 @@
-package com.matrix.dao;
+package com.matrix.repos.common;
 
 import java.util.Map;
 
@@ -14,30 +14,31 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.matrix.models.Neuron;
+import com.matrix.models.Terminal;
+import com.matrix.repos.TerminalRepository;
 import com.matrix.statics.MatrixUtils;
 
 @Component
-public class DefaultNeuronRepository implements NeuronRepository {
+public class DefaultTerminalRepository implements TerminalRepository {
 
 	@Autowired
 	TransportClient elasticClient;
 
-	private Logger logger = LogManager.getLogger(DefaultNeuronRepository.class);
+	private Logger logger = LogManager.getLogger(DefaultTerminalRepository.class);
 
 	@Value("${spring.data.elasticsearch.properties.index-name}")
 	private String ELASTIC_INDEX_NAME;
 
-	private String DOCUMENT_TYPE = "_neuron";
-
+	private String DOCUMENT_TYPE = "_doc";
+	
 	@Override
-	public Neuron getNeuron(String id) {
-		Neuron neuron = null;
+	public Terminal getTerminal(String id) {
+		Terminal neuron = null;
 		try {
 			GetResponse response = elasticClient.prepareGet(ELASTIC_INDEX_NAME, DOCUMENT_TYPE, id).get();
 			if (response.isExists()) {
 				String source = response.getSourceAsString();
-				neuron = MatrixUtils.mapToObject(source, new TypeReference<Neuron>() {
+				neuron = MatrixUtils.mapToObject(source, new TypeReference<Terminal>() {
 				});
 				logger.info(id.toUpperCase() + " successfully retrieved from Elasticsearch");
 			} else {
@@ -50,36 +51,36 @@ public class DefaultNeuronRepository implements NeuronRepository {
 	}
 
 	@Override
-	public boolean saveNeuron(Neuron neuron) {
+	public boolean saveTerminal(Terminal terminal) {
 		boolean status = false;
 		try {
-			String source = MatrixUtils.maptToJson(neuron);
-			IndexResponse response = elasticClient.prepareIndex(ELASTIC_INDEX_NAME, DOCUMENT_TYPE, neuron.getId())
+			String source = MatrixUtils.maptToJson(terminal);
+			IndexResponse response = elasticClient.prepareIndex(ELASTIC_INDEX_NAME, DOCUMENT_TYPE, terminal.getId())
 					.setSource(source).get();
 			if (response.getResult().toString().contentEquals("CREATED")) {
 				status = true;
-				logger.info(neuron.getId() + " successfully saved in Elasticsearch");
+				logger.info(terminal.getId() + " successfully saved in Elasticsearch");
 			}
 		} catch (Exception e) {
-			logger.error("Unable to update " + neuron.getId() + " in Elasticsearch:\n", e);
+			logger.error("Unable to update " + terminal.getId() + " in Elasticsearch:\n", e);
 		}
 		return status;
 	}
 
 	@Override
-	public Neuron updateNeuron(String id, Map<String, Object> neuronUpdates) {
-		Neuron neuron = null;
+	public Terminal updateTerminal(String id, Map<String, Object> terminalUpdates) {
+		Terminal terminal = null;
 		try {
 			UpdateResponse response = elasticClient.prepareUpdate(ELASTIC_INDEX_NAME, DOCUMENT_TYPE, id)
-					.setDoc(neuronUpdates).setFetchSource(true).get();
+					.setDoc(terminalUpdates).setFetchSource(true).get();
 			if (response.getResult().toString().contentEquals("UPDATED")) {
 				String source = response.getGetResult().sourceAsString();
-				neuron = MatrixUtils.mapToObject(source, new TypeReference<Neuron>() {
+				terminal = MatrixUtils.mapToObject(source, new TypeReference<Terminal>() {
 				});
 				logger.info(id.toUpperCase() + " successfully updated in Elasticsearch");
 			} else if (response.getResult().toString().contentEquals("NOOP")) {
 				String source = response.getGetResult().sourceAsString();
-				neuron = MatrixUtils.mapToObject(source, new TypeReference<Neuron>() {
+				terminal = MatrixUtils.mapToObject(source, new TypeReference<Terminal>() {
 				});
 				logger.info(id.toUpperCase() + " is already up to date in Elasticsearch");
 			} else if (response.getResult().toString().contentEquals("NOT_FOUND")) {
@@ -90,11 +91,11 @@ public class DefaultNeuronRepository implements NeuronRepository {
 		} catch (Exception e) {
 			logger.error("Unable to update " + id.toUpperCase() + " from Elasticsearch:\n", e);
 		}
-		return neuron;
+		return terminal;
 	}
 
 	@Override
-	public boolean deleteNeuron(String id) {
+	public boolean deleteTerminal(String id) {
 		boolean status = false;
 		try {
 			DeleteResponse response = elasticClient.prepareDelete(ELASTIC_INDEX_NAME, DOCUMENT_TYPE, id).get();

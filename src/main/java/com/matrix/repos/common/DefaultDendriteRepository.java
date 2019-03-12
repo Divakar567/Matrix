@@ -1,4 +1,4 @@
-package com.matrix.dao;
+package com.matrix.repos.common;
 
 import java.util.Map;
 
@@ -14,30 +14,31 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.matrix.models.Terminal;
+import com.matrix.models.Dendrite;
+import com.matrix.repos.DendriteRepository;
 import com.matrix.statics.MatrixUtils;
 
 @Component
-public class DefaultTerminalRepository implements TerminalRepository {
+public class DefaultDendriteRepository implements DendriteRepository {
 
 	@Autowired
 	TransportClient elasticClient;
 
-	private Logger logger = LogManager.getLogger(DefaultTerminalRepository.class);
+	private Logger logger = LogManager.getLogger(DefaultDendriteRepository.class);
 
 	@Value("${spring.data.elasticsearch.properties.index-name}")
 	private String ELASTIC_INDEX_NAME;
 
-	private String DOCUMENT_TYPE = "_terminal";
-	
+	private String DOCUMENT_TYPE = "_doc";
+
 	@Override
-	public Terminal getTerminal(String id) {
-		Terminal neuron = null;
+	public Dendrite getDendrite(String id) {
+		Dendrite dendrite = null;
 		try {
 			GetResponse response = elasticClient.prepareGet(ELASTIC_INDEX_NAME, DOCUMENT_TYPE, id).get();
 			if (response.isExists()) {
 				String source = response.getSourceAsString();
-				neuron = MatrixUtils.mapToObject(source, new TypeReference<Terminal>() {
+				dendrite = MatrixUtils.mapToObject(source, new TypeReference<Dendrite>() {
 				});
 				logger.info(id.toUpperCase() + " successfully retrieved from Elasticsearch");
 			} else {
@@ -46,40 +47,40 @@ public class DefaultTerminalRepository implements TerminalRepository {
 		} catch (Exception e) {
 			logger.error("Unable to get " + id.toUpperCase() + " from Elasticsearch:\n", e);
 		}
-		return neuron;
+		return dendrite;
 	}
 
 	@Override
-	public boolean saveTerminal(Terminal terminal) {
+	public boolean saveDendrite(Dendrite dendrite) {
 		boolean status = false;
 		try {
-			String source = MatrixUtils.maptToJson(terminal);
-			IndexResponse response = elasticClient.prepareIndex(ELASTIC_INDEX_NAME, DOCUMENT_TYPE, terminal.getId())
+			String source = MatrixUtils.maptToJson(dendrite);
+			IndexResponse response = elasticClient.prepareIndex(ELASTIC_INDEX_NAME, DOCUMENT_TYPE, dendrite.getId())
 					.setSource(source).get();
 			if (response.getResult().toString().contentEquals("CREATED")) {
 				status = true;
-				logger.info(terminal.getId() + " successfully saved in Elasticsearch");
+				logger.info(dendrite.getId() + " successfully saved in Elasticsearch");
 			}
 		} catch (Exception e) {
-			logger.error("Unable to update " + terminal.getId() + " in Elasticsearch:\n", e);
+			logger.error("Unable to update " + dendrite.getId() + " in Elasticsearch:\n", e);
 		}
 		return status;
 	}
 
 	@Override
-	public Terminal updateTerminal(String id, Map<String, Object> terminalUpdates) {
-		Terminal terminal = null;
+	public Dendrite updateDendrite(String id, Map<String, Object> dendriteUpdates) {
+		Dendrite dendrite = null;
 		try {
 			UpdateResponse response = elasticClient.prepareUpdate(ELASTIC_INDEX_NAME, DOCUMENT_TYPE, id)
-					.setDoc(terminalUpdates).setFetchSource(true).get();
+					.setDoc(dendriteUpdates).setFetchSource(true).get();
 			if (response.getResult().toString().contentEquals("UPDATED")) {
 				String source = response.getGetResult().sourceAsString();
-				terminal = MatrixUtils.mapToObject(source, new TypeReference<Terminal>() {
+				dendrite = MatrixUtils.mapToObject(source, new TypeReference<Dendrite>() {
 				});
 				logger.info(id.toUpperCase() + " successfully updated in Elasticsearch");
 			} else if (response.getResult().toString().contentEquals("NOOP")) {
 				String source = response.getGetResult().sourceAsString();
-				terminal = MatrixUtils.mapToObject(source, new TypeReference<Terminal>() {
+				dendrite = MatrixUtils.mapToObject(source, new TypeReference<Dendrite>() {
 				});
 				logger.info(id.toUpperCase() + " is already up to date in Elasticsearch");
 			} else if (response.getResult().toString().contentEquals("NOT_FOUND")) {
@@ -90,11 +91,11 @@ public class DefaultTerminalRepository implements TerminalRepository {
 		} catch (Exception e) {
 			logger.error("Unable to update " + id.toUpperCase() + " from Elasticsearch:\n", e);
 		}
-		return terminal;
+		return dendrite;
 	}
 
 	@Override
-	public boolean deleteTerminal(String id) {
+	public boolean deleteDendrite(String id) {
 		boolean status = false;
 		try {
 			DeleteResponse response = elasticClient.prepareDelete(ELASTIC_INDEX_NAME, DOCUMENT_TYPE, id).get();

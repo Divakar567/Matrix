@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.matrix.services.BrainProcessor;
 
-public class Brain {
+public class Brain extends ElasticDocument {
 
 	@Autowired
 	BrainProcessor brainProcessor;

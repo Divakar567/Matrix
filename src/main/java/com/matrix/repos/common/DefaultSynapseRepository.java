@@ -1,4 +1,4 @@
-package com.matrix.dao;
+package com.matrix.repos.common;
 
 import java.util.Map;
 
@@ -14,30 +14,31 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.matrix.models.Dendrite;
+import com.matrix.models.Synapse;
+import com.matrix.repos.SynapseRepository;
 import com.matrix.statics.MatrixUtils;
 
 @Component
-public class DefaultDendriteRepository implements DendriteRepository {
+public class DefaultSynapseRepository implements SynapseRepository {
 
 	@Autowired
 	TransportClient elasticClient;
 
-	private Logger logger = LogManager.getLogger(DefaultDendriteRepository.class);
+	private Logger logger = LogManager.getLogger(DefaultSynapseRepository.class);
 
 	@Value("${spring.data.elasticsearch.properties.index-name}")
 	private String ELASTIC_INDEX_NAME;
 
-	private String DOCUMENT_TYPE = "_dendrite";
+	private String DOCUMENT_TYPE = "_doc";
 
 	@Override
-	public Dendrite getDendrite(String id) {
-		Dendrite dendrite = null;
+	public Synapse getSynapse(String id) {
+		Synapse synapse = null;
 		try {
 			GetResponse response = elasticClient.prepareGet(ELASTIC_INDEX_NAME, DOCUMENT_TYPE, id).get();
 			if (response.isExists()) {
 				String source = response.getSourceAsString();
-				dendrite = MatrixUtils.mapToObject(source, new TypeReference<Dendrite>() {
+				synapse = MatrixUtils.mapToObject(source, new TypeReference<Synapse>() {
 				});
 				logger.info(id.toUpperCase() + " successfully retrieved from Elasticsearch");
 			} else {
@@ -46,40 +47,40 @@ public class DefaultDendriteRepository implements DendriteRepository {
 		} catch (Exception e) {
 			logger.error("Unable to get " + id.toUpperCase() + " from Elasticsearch:\n", e);
 		}
-		return dendrite;
+		return synapse;
 	}
 
 	@Override
-	public boolean saveDendrite(Dendrite dendrite) {
+	public boolean saveSynapse(Synapse synapse) {
 		boolean status = false;
 		try {
-			String source = MatrixUtils.maptToJson(dendrite);
-			IndexResponse response = elasticClient.prepareIndex(ELASTIC_INDEX_NAME, DOCUMENT_TYPE, dendrite.getId())
+			String source = MatrixUtils.maptToJson(synapse);
+			IndexResponse response = elasticClient.prepareIndex(ELASTIC_INDEX_NAME, DOCUMENT_TYPE, synapse.getId())
 					.setSource(source).get();
 			if (response.getResult().toString().contentEquals("CREATED")) {
 				status = true;
-				logger.info(dendrite.getId() + " successfully saved in Elasticsearch");
+				logger.info(synapse.getId() + " successfully saved in Elasticsearch");
 			}
 		} catch (Exception e) {
-			logger.error("Unable to update " + dendrite.getId() + " in Elasticsearch:\n", e);
+			logger.error("Unable to update " + synapse.getId() + " in Elasticsearch:\n", e);
 		}
 		return status;
 	}
 
 	@Override
-	public Dendrite updateDendrite(String id, Map<String, Object> dendriteUpdates) {
-		Dendrite dendrite = null;
+	public Synapse updateSynapse(String id, Map<String, Object> synapseUpdates) {
+		Synapse synapse = null;
 		try {
 			UpdateResponse response = elasticClient.prepareUpdate(ELASTIC_INDEX_NAME, DOCUMENT_TYPE, id)
-					.setDoc(dendriteUpdates).setFetchSource(true).get();
+					.setDoc(synapseUpdates).setFetchSource(true).get();
 			if (response.getResult().toString().contentEquals("UPDATED")) {
 				String source = response.getGetResult().sourceAsString();
-				dendrite = MatrixUtils.mapToObject(source, new TypeReference<Dendrite>() {
+				synapse = MatrixUtils.mapToObject(source, new TypeReference<Synapse>() {
 				});
 				logger.info(id.toUpperCase() + " successfully updated in Elasticsearch");
 			} else if (response.getResult().toString().contentEquals("NOOP")) {
 				String source = response.getGetResult().sourceAsString();
-				dendrite = MatrixUtils.mapToObject(source, new TypeReference<Dendrite>() {
+				synapse = MatrixUtils.mapToObject(source, new TypeReference<Synapse>() {
 				});
 				logger.info(id.toUpperCase() + " is already up to date in Elasticsearch");
 			} else if (response.getResult().toString().contentEquals("NOT_FOUND")) {
@@ -90,11 +91,11 @@ public class DefaultDendriteRepository implements DendriteRepository {
 		} catch (Exception e) {
 			logger.error("Unable to update " + id.toUpperCase() + " from Elasticsearch:\n", e);
 		}
-		return dendrite;
+		return synapse;
 	}
 
 	@Override
-	public boolean deleteDendrite(String id) {
+	public boolean deleteSynapse(String id) {
 		boolean status = false;
 		try {
 			DeleteResponse response = elasticClient.prepareDelete(ELASTIC_INDEX_NAME, DOCUMENT_TYPE, id).get();

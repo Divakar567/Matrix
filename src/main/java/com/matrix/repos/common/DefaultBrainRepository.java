@@ -1,4 +1,4 @@
-package com.matrix.dao;
+package com.matrix.repos.common;
 
 import java.util.Map;
 
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.matrix.models.Brain;
+import com.matrix.repos.BrainRepository;
 import com.matrix.statics.MatrixUtils;
 
 @Component
@@ -28,7 +29,7 @@ public class DefaultBrainRepository implements BrainRepository {
 	@Value("${spring.data.elasticsearch.properties.index-name}")
 	private String ELASTIC_INDEX_NAME;
 
-	private String DOCUMENT_TYPE = "_brain";
+	private String DOCUMENT_TYPE = "_doc";
 
 	@Override
 	public Brain getBrain(String name) {
